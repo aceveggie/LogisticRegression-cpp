@@ -55,7 +55,7 @@ namespace LogisticRegression
 				this->normalization_mode = normalization_mode;
 				this->debug = debug;
 				this->regularized = regularized;
-				this->init(Data, labels);
+				this->init(this->Data, this->Labels);
 			}
 
 			~LR()
@@ -76,4 +76,3 @@ namespace LogisticRegression
 /* end of namespace */
 }
 #endif
-

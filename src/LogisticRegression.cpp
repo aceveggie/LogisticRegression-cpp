@@ -19,8 +19,8 @@ using namespace std;
 void LogisticRegression::LR::init(Mat Data, Mat Labels)
 {
 	assert(labels.rows == Data.rows);
-	std::map<string, int> label_map = LogisticRegression::LR::get_label_map(Mat Labels)
-	
+	int n_classes = LogisticRegression::LR::get_label_map(Mat Labels).size();
+
 	//Mat m= Mat(4,3, CV_8UC1); uchar elem_m= m.at<uchar>(i,j); //access element mij, with i from 0 to rows-1 and j from 0 to cols-1. 
 
 	/*
@@ -40,7 +40,10 @@ void LogisticRegression::LR::init(Mat Data, Mat Labels)
 
 void LogisticRegression::LR::train(Mat Data, Mat Labels, vector<int> unique_classes)
 {
-
+	int num_iters = this->num_iters;
+	// int m = Data.rows;
+	// int n = Data.cols;
+		
 }
 
 void LogisticRegression::LR::predict(Mat Data, vector<cv::Mat> Thetas)
@@ -60,8 +63,12 @@ void LogisticRegression::LR::compute_gradient(self,data, labels, init_theta)
 {
 
 }
-void LogisticRegression::LR::get_label_map(Mat Labels)
+std::map<int, int> LogisticRegression::LR::get_label_map(Mat Labels)
 {
-	for(int i = 0;i<Labels.row)
-
+	std::map<int, int> label_map;
+	for(int i = 0;i<Labels.row;i++)
+	{
+		label_map[Labels.at<int>(i)] += 1;
+	}
+	return label_map;
 }
