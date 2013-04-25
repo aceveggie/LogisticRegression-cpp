@@ -19,10 +19,10 @@ using namespace std;
 void LogisticRegression::LR::init(Mat Data, Mat Labels)
 {
 	assert(labels.rows == Data.rows);
-	int n_classes = LogisticRegression::LR::get_label_map(Mat Labels).size();
+	this->n_classes = LogisticRegression::LR::get_label_map(Mat Labels).size();
+	assert(this->n_classes>=2);
 
 	//Mat m= Mat(4,3, CV_8UC1); uchar elem_m= m.at<uchar>(i,j); //access element mij, with i from 0 to rows-1 and j from 0 to cols-1. 
-
 	/*
 	Mat Data;
 	Mat Labels;
@@ -35,14 +35,15 @@ void LogisticRegression::LR::init(Mat Data, Mat Labels)
 	bool regularized;
 	*/
 
-
 }
 
 void LogisticRegression::LR::train(Mat Data, Mat Labels, vector<int> unique_classes)
 {
 	int num_iters = this->num_iters;
-	// int m = Data.rows;
-	// int n = Data.cols;
+	int m = Data.rows;
+	int n = Data.cols;
+	// local labels for one vs rest classification
+	Mat LLabels = Mat(Labels.rows, Labels.cols, Labels.type(), Scalar::all(0));
 		
 }
 
