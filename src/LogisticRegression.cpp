@@ -47,21 +47,89 @@ void LogisticRegression::LR::train(Mat Data, Mat Labels, vector<int> unique_clas
 		
 }
 
-void LogisticRegression::LR::predict(Mat Data, vector<cv::Mat> Thetas)
+int LogisticRegression::LR::predict(Mat Data, vector<cv::Mat> Thetas)
+{
+	// returns a class of the predicted class
+	// class names can be 1,2,3,4, .... etc
+	assert(Thetas.size()>0);
+
+	int classified_class = 0;
+	
+	vector<int> m_count;
+
+	Mat Pred;
+
+	if(Thetas.size()==1)
+	{
+		Pred = LogisticRegression::LR::calc_sigmoid(Data*Thetas[i]);
+		assert(Pred.rows ==1);
+		assert(Pred.cols ==1);
+		classified_class = floor(Pred.at<int>(0,0) + 0.5);
+	}
+	else
+	{
+		for(int i = 0;i<Thetas.size();i++)
+		{
+			Pred = LogisticRegression::LR::calc_sigmoid(Data * Thetas[i]);
+			assert(Pred.rows ==1);
+			assert(Pred.cols ==1);
+			m_count.push_back(Pred.at<int>(0,0));
+		}
+		// class indices start from 1
+		classified_class = *( std::max_element( v2.begin(), v2.end() ) ) + 1;
+	}
+}
+
+cv::Mat LogisticRegression::LR::calc_sigmoid(Mat Data)
+{
+	cv::Mat Dest;
+	cv::exp(-Data, Dest);
+	return 1.0/(1.0+Dest);
+}
+
+
+void LogisticRegression::LR::compute_cost(Mat Data, Mat Labels, Mat Init_Theta)
 {
 
 }
-
-void LogisticRegression::LR::calc_sigmoid((Mat Data)
+void LogisticRegression::LR::compute_gradient(Mat Data, Mat Labels, Mat Init_Theta)
 {
+	cv::Mat A;
+	cv::Mat B;
+	cv::Mat Gradient;
 
-}
-void LogisticRegression::LR::compute_cost(Mat Data, Mat Labels, Mat init_theta)
-{
+	int alpha = this->alpha;
+	int num_iters = this->num_iters;
+	int llambda = 0;
+	int num_samples = Labels.rows;
+	long double cost = 0;
 
-}
-void LogisticRegression::LR::compute_gradient(self,data, labels, init_theta)
-{
+
+	if(this->regularized == true)
+	{
+		llambda = 1;
+	}
+	for(int i = 0;i<num_iters;i++)
+	{
+		cost = LogisticRegression::LR::compute_cost(Data, Labels, Init_Theta);
+		if(this->debug == true)
+		{
+			cout<<"iteration: "<<i<<endl;
+			cout<<"cost: "<<cost<<endl;
+		}
+	}
+	B = LogisticRegression::LR::calc_sigmoid((Data*Init_Theta)-Labels);
+	A = (1/num_samples)*Data.t();
+
+	Gradient = A*B;
+
+
+			
+	A = LogisticRegression::LR::calc_sigmoid(Data*Init_Theta) - Labels;
+
+	B = (data[:,range(1,n)])
+
+
 
 }
 std::map<int, int> LogisticRegression::LR::get_label_map(Mat Labels)
