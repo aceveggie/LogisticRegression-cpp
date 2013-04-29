@@ -64,7 +64,7 @@ namespace LogisticRegression
 			}
 
 			//this calculates the projection vectors W
-			void train(Mat Data, Mat Labels, vector<int> unique_classes);
+			std::vector<cv::Mat> train(Mat Data, Mat Labels, vector<int> unique_classes);
 			void predict(Mat Data, vector<cv::Mat> Thetas);
 			void calc_sigmoid((Mat Data);
 			double compute_cost(Mat Data, Mat Labels, Mat init_theta);

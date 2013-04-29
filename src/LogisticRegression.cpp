@@ -22,6 +22,7 @@ void LogisticRegression::LR::init(Mat Data, Mat Labels)
 	this->n_classes = LogisticRegression::LR::get_label_map(Mat Labels).size();
 	assert(this->n_classes>=2);
 
+
 	//Mat m= Mat(4,3, CV_8UC1); uchar elem_m= m.at<uchar>(i,j); //access element mij, with i from 0 to rows-1 and j from 0 to cols-1. 
 	/*
 	Mat Data;
@@ -37,13 +38,83 @@ void LogisticRegression::LR::init(Mat Data, Mat Labels)
 
 }
 
-void LogisticRegression::LR::train(Mat Data, Mat Labels, vector<int> unique_classes)
+vector<cv::Mat> LogisticRegression::LR::train(Mat Data, Mat Labels, vector<int> unique_classes)
 {
 	int num_iters = this->num_iters;
 	int m = Data.rows;
 	int n = Data.cols;
-	// local labels for one vs rest classification
-	Mat LLabels = Mat(Labels.rows, Labels.cols, Labels.type(), Scalar::all(0));
+	double cost;
+	bool status = false;
+	
+
+	cv::Mat LLabels = Mat(Labels.rows, Labels.cols, Labels.type(), Scalar::all(0));
+	cv::Mat TempTheta;
+	cv::Mat NewTheta;
+	cv::Mat TLabels;
+
+	vector<cv::Mat> InitThetas;
+	vector<cv::Mat> Thetas;
+	std::vector<int> cunique_classes;
+
+	// rename user defined labels for more simplicity starting from 0, 1, 2, ...
+	for(int i=0;i<unique_classes.size();i++)
+	{
+		int cclass = unique_classes[i];
+		for(int j=0;j<Labels.rows;j++)
+		{
+			if(Labels.at<int>(j, 0)==cclass)
+				LLabels.at<int>(j, 0) = i;
+
+		}
+		// to hold new class label information
+		cunique_classes.push_back(i);
+	}
+	
+
+	if(this->n_classes==2)
+	{
+		TempTheta == Mat::zeros(1, Data.cols, CV_32FC1);
+		NewTheta = LogisticRegression::LR::compute_gradient(Data, LLabels, TempTheta);
+		cost = LogisticRegression::LR::compute_cost(Data, LLabels, NewTheta);
+		InitThetas.push_back(NewTheta);
+		status = true;
+	}
+	else
+	{
+		// we need to get a theta per class
+		// for a single class
+		for(int i =0;i<this->n_classes;i++)
+		{
+			TempTheta == Mat::zeros(1, Data.cols, CV_32FC1);
+			InitThetas.push_back(TempTheta);
+		}
+		for(int i =0 ;i<this->n_classes;i++)
+		{
+			// take each class
+			// make this class 1 and rest of them zero
+			
+			int cclass = cunique_classes[i];
+			TLabels = Mat::zeros(Labels.rows, Labels.cols, Labels.type());
+			for(int j = 0;j<TLabels.rows;j++)
+			{
+				if(cunique_classes[i] == LLabels.at<int>(j,0))
+				{
+					TLabels.at<int>(j,0) = 1;
+				}
+			}
+
+			// for current class TLabels has value of 1 and rest of them as zero
+			TempTheta = InitThetas[i];
+			NewTheta = LogisticRegression::LR::compute_gradient(Data, TLabels, TempTheta);
+			ccost =LogisticRegression::LR::compute_cost(Data, TLabels, TempTheta);
+
+			Thetas.push_back(NewTheta);
+		}
+
+
+	}
+
+	return Thetas;
 		
 }
 
@@ -209,4 +280,17 @@ std::map<int, int> LogisticRegression::LR::get_label_map(Mat Labels)
 		label_map[Labels.at<int>(i)] += 1;
 	}
 	return label_map;
+}
+
+vector<int> LogisticRegression::LR::get_label_list(std::map<int, int> lmap)
+{
+	std::vector<int> v;
+
+	for(map<int,int>::iterator it = lmap.begin(); it != lmap.end(); ++it) 
+	{
+	 	v.push_back(it->first);
+	  	cout << it->first << "\n";
+  	}
+	
+	return v;
 }
