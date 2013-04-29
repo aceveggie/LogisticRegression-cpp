@@ -67,7 +67,7 @@ namespace LogisticRegression
 			void train(Mat Data, Mat Labels, vector<int> unique_classes);
 			void predict(Mat Data, vector<cv::Mat> Thetas);
 			void calc_sigmoid((Mat Data);
-			void compute_cost(Mat Data, Mat Labels, Mat init_theta);
+			double compute_cost(Mat Data, Mat Labels, Mat init_theta);
 			void compute_gradient(self,data, labels, init_theta);
 			void get_label_map(Mat Labels);
 			

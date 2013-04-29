@@ -78,6 +78,7 @@ int LogisticRegression::LR::predict(Mat Data, vector<cv::Mat> Thetas)
 		// class indices start from 1
 		classified_class = *( std::max_element( v2.begin(), v2.end() ) ) + 1;
 	}
+	return classified_class;
 }
 
 cv::Mat LogisticRegression::LR::calc_sigmoid(Mat Data)
@@ -88,8 +89,59 @@ cv::Mat LogisticRegression::LR::calc_sigmoid(Mat Data)
 }
 
 
-void LogisticRegression::LR::compute_cost(Mat Data, Mat Labels, Mat Init_Theta)
+double LogisticRegression::LR::compute_cost(Mat Data, Mat Labels, Mat Init_Theta)
 {
+	int llambda = 0;
+	int m;
+	int n;
+
+	double cost = 0;
+	double rparameter = 0
+
+	cv::Mat Gradient;
+	cv::Mat Theta2;
+	cv::Mat Theta2Theta2;
+	
+	m = Data.rows;
+	n = Data.cols;
+
+	Gradient = Mat::zeros( Init_Theta.rows, Init_Theta.cols, Init_Theta.type());
+	Theta2 = Init_Theta(Range(1, n), Range::all());
+	cv::multiply(Theta2, Theta2, Theta2Theta2, 1);
+
+	if(this->regularized == true)
+	{
+		llambda = 1.0;
+	}
+
+	if(this->normalization_mode.compare("L1"))
+	{
+		rparameter = (llambda/(2*m)) * cv::sum(Theta2)[0];	
+	}
+	else
+	{
+		// assuming it to be L2 by default
+		rparameter = (llambda/(2*m)) * cv::sum(Theta2Theta2)[0];
+	}
+
+	
+	Mat D1 = LogisticRegression::LR::calc_sigmoid(Data* Init_Theta);
+	cv::log(D1, D1);
+	cv::multiply(D1, Labels, D1);
+
+	Mat D2 = 1 - LogisticRegression::LR::calc_sigmoid(np.dot(Data * Init_Theta));
+	cv::log(D2, D2);
+	cv::multiply(D2, 1-Labels, D2);
+	
+	cost = (-1.0/m) * (cv::sum(D1)[0] + cv::sum(D2)[0]);
+	cost = cost + rparameter;
+
+	// J = (-1.0/ m) * ( np.sum( np.log(self.sigmoidCalc( np.dot(data, init_theta))) * labels + ( np.log ( 1 - self.sigmoidCalc(np.dot(data, init_theta)) ) * ( 1 - labels ) ) ) )
+	// J = J + regularized_parameter
+
+	return cost;
+
+
 
 }
 void LogisticRegression::LR::compute_gradient(Mat Data, Mat Labels, Mat Init_Theta)
@@ -97,12 +149,17 @@ void LogisticRegression::LR::compute_gradient(Mat Data, Mat Labels, Mat Init_The
 	cv::Mat A;
 	cv::Mat B;
 	cv::Mat Gradient;
+	cv::Mat AB;
 
 	int alpha = this->alpha;
 	int num_iters = this->num_iters;
 	int llambda = 0;
 	int num_samples = Labels.rows;
 	long double cost = 0;
+	int m;
+	int n;
+	m = Data.rows;
+	n = Data.cols;
 
 
 	if(this->regularized == true)
@@ -118,19 +175,31 @@ void LogisticRegression::LR::compute_gradient(Mat Data, Mat Labels, Mat Init_The
 			cout<<"cost: "<<cost<<endl;
 		}
 	}
+
 	B = LogisticRegression::LR::calc_sigmoid((Data*Init_Theta)-Labels);
 	A = (1/num_samples)*Data.t();
 
 	Gradient = A*B;
 
-
-			
 	A = LogisticRegression::LR::calc_sigmoid(Data*Init_Theta) - Labels;
+	B = Data(Range::all(), 0);
 
-	B = (data[:,range(1,n)])
+	cv::multiply(A, B, AB, 1);
+	
+	Gradient.at<double>(0,0) = (1/m) * cv::sum(AB)[0];	
+	B = Data(Range::all(), Range(1,n));
 
+	for(int i = 1;i<Gradient.rows;i++)
+	{
+		// B = (data[:,i].reshape((data[:,i].shape[0],1)))
+		// grad[i] = (1/m)*np.sum(A*B) + ((llambda/m)*init_theta[i])
 
+		B = Data(Range:all(),i).reshape((data(Range:all(),i).rows,1));
+		cv::multiply(A, B, AB, 1);
+		Gradient.at<double>(0,i) = (1.0/m)*cv::sum(AB)[0] + (llambda/m) * Init_Theta.at<double>(0, i);
+	}
 
+	Init_Theta = Init_Theta - ((alpha/m)*Gradient);
 }
 std::map<int, int> LogisticRegression::LR::get_label_map(Mat Labels)
 {
