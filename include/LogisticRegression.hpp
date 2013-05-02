@@ -58,7 +58,8 @@ namespace LogisticRegression
 				this->normalization_mode = normalization_mode;
 				this->debug = debug;
 				this->regularized = regularized;
-				this->init(this->Data, this->Labels);
+				//this->init(this->Data, this->Labels);
+				this->init();
 			}
 
 			~LR()
@@ -74,8 +75,9 @@ namespace LogisticRegression
 			// cv::Mat compute_gradient(Mat Data, Mat Labels, Mat Init_Theta);
 			// void get_label_map(Mat Labels);
 
-			void init(Mat Data, Mat Labels);
-			cv::Mat train(Mat Data, Mat Labels, vector<int> unique_classes);
+			//void init(Mat Data, Mat Labels);
+			void init();			
+			cv::Mat train(Mat DataI, Mat LabelsI);
 			cv::Mat predict(Mat Data, Mat Thetas);
 			cv::Mat calc_sigmoid(Mat Data);
 			double compute_cost(Mat Data, Mat Labels, Mat Init_Theta);
@@ -83,6 +85,7 @@ namespace LogisticRegression
 			std::map<int, int> get_label_map(Mat Labels);
 			vector<int> get_label_list(std::map<int, int> lmap);
 			cv::Mat remap_labels(Mat Labels, std::map<int, int> lmap);
+
 	};
 /* end of namespace */
 }
