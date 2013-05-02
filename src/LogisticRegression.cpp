@@ -34,30 +34,30 @@ using namespace std;
 void LogisticRegression::LR::init()
 {
 
-	vconcat(Mat(this->Data.rows, 1, this->Data.type(), Scalar::all(1.0)), this->Data.col(0));
 	
-	CV_Assert(Labels.rows == Data.rows);
-	this->n_classes = LogisticRegression::LR::get_label_map(Labels).size();
-	
-	CV_Assert(this->n_classes>=2);
 
 }
 
 cv::Mat LogisticRegression::LR::train(Mat DataI, Mat LabelsI)
 {
+	vconcat(Mat(DataI.rows, 1, DataI.type(), Scalar::all(1.0)), DataI.col(0));
+	CV_Assert(LabelsI.rows == DataI.rows);
+	this->num_classes = LogisticRegression::LR::get_label_map(LabelsI).size();
+	CV_Assert(this->num_classes>=2);
 
 	Mat Data;
 	Mat Labels;
+
 	vector<int> unique_classes = LogisticRegression::LR::get_label_list( LogisticRegression::LR::get_label_map(LabelsI));
-	Mat Thetas = Mat::zeros(unique_classes.size(),DataI.cols,CV_64F);
+	
+	Mat Thetas = Mat::zeros(this->num_classes, DataI.cols, CV_64F);
 	Mat Init_Theta = Mat::zeros(DataI.cols, 1, CV_64F);
 	Mat LLabels = LogisticRegression::LR::remap_labels(LabelsI, this->forward_mapper);
 	Mat NewLocalLabels;
+	
 	int ii=0;
 	
-	
-	
-	if(this->n_classes == 2)
+	if(this->num_classes == 2)
 	{
 		DataI.convertTo(Data, CV_64F);
 		
@@ -95,6 +95,10 @@ cv::Mat LogisticRegression::LR::predict(Mat Data, cv::Mat Thetas)
 {
 	/* returns a class of the predicted class
 	 class names can be 1,2,3,4, .... etc */
+
+	// add a column of ones
+	vconcat(Mat(Data.rows, 1, Data.type(), Scalar::all(1.0)), Data.col(0));
+	
 	CV_Assert(Thetas.rows > 0);
 
 	int classified_class = 0;
@@ -105,8 +109,7 @@ cv::Mat LogisticRegression::LR::predict(Mat Data, cv::Mat Thetas)
 	Point maxLoc;
     Point matchLoc;
 	
-	vector<int> m_count;
-	
+		
 	cv::Mat Labels;
 	cv::Mat CLabels;
 	cv::Mat TempPred;
@@ -151,7 +154,6 @@ cv::Mat LogisticRegression::LR::calc_sigmoid(Mat Data)
 {
 	cv::Mat Dest;
 	cv::exp(-Data, Dest);
-	
 	return 1.0/(1.0+Dest);
 }
 

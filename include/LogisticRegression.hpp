@@ -41,23 +41,22 @@ namespace LogisticRegression
 	using namespace std;
 	using namespace cv;
 
-
-	/* Perform Linear Discriminant Analysis */
+	/* Perform Logistic Regression */
 	class LR 
 	{
 
 		private:
 
-			Mat Data;
-			Mat Labels;
-			vector<cv::Mat> Weights;
 			float alpha;
-			int n_classes;
+
+			int num_classes;
 			int num_iters;
+
 			string normalization_mode;
+
 			bool debug;
 			bool regularized;
-			map<int, int> mapper;
+
 			map<int, int> forward_mapper;
 			map<int, int> reverse_mapper;
 
@@ -66,15 +65,12 @@ namespace LogisticRegression
 
 			LR(Mat Data, Mat Labels, int num_iters = 100,bool regularized = false,bool debug = false, float alpha = 1,string normalization_mode = "L2")
 			{
-				this->Data = Data;
-				this->Labels = Labels;
 				this->alpha = alpha;
 				this->num_iters = num_iters;
 				this->normalization_mode = normalization_mode;
 				this->debug = debug;
 				this->regularized = regularized;
-				//this->init(this->Data, this->Labels);
-				this->init();
+				
 			}
 
 			~LR()
