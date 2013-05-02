@@ -15,6 +15,8 @@ AUTHOR: RAHUL KAVI
 
 # Logistic Regression ALGORITHM
 
+www.github.com/aceveggie
+
 */
 #include <iostream>
 #include <assert.h>

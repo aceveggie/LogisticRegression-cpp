@@ -1,7 +1,22 @@
 /*
-This file features a module to perform Logistic Regression in OpenCV
-Author: Rahul Kavi
+
+This is a implementation of the Logistic Regression algorithm in C++ using OpenCV.
+
+AUTHOR: RAHUL KAVI
+
+# You are free to use, change, or redistribute the code in any way you wish for
+# non-commercial purposes, but please maintain the name of the original author.
+# This code comes with no warranty of any kind.
+
+#
+# You are free to use, change, or redistribute the code in any way you wish for
+# non-commercial purposes, but please maintain the name of the original author.
+# This code comes with no warranty of any kind.
+
+# Logistic Regression ALGORITHM
+
 www.github.com/aceveggie
+
 */
 
 #include <iostream>
