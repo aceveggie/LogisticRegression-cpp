@@ -42,6 +42,9 @@ namespace LogisticRegression
 			string normalization_mode;
 			bool debug;
 			bool regularized;
+			map<int, int> mapper;
+			map<int, int> forward_mapper;
+			map<int, int> reverse_mapper;
 
 
 		public:
@@ -79,7 +82,7 @@ namespace LogisticRegression
 			cv::Mat compute_gradient(Mat Data, Mat Labels, Mat Init_Theta);
 			std::map<int, int> get_label_map(Mat Labels);
 			vector<int> get_label_list(std::map<int, int> lmap);
-
+			cv::Mat remap_labels(Mat Labels, std::map<int, int> lmap);
 	};
 /* end of namespace */
 }
