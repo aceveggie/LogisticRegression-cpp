@@ -19,8 +19,6 @@ AUTHOR: RAHUL KAVI
 #include <iostream>
 #include <assert.h>
 
-#include <assert.h>
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -52,6 +50,8 @@ int main(int argc, char** argv)
 	
 
 	cv::Mat learntMats = lr_.train(Data, Labels);
+	
+	/* learnt thetas are arranged across ross of a matrix*/
 
 	// for(int i = 0;i<learntMats.rows;i++)
 	// {
