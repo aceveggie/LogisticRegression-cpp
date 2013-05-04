@@ -72,7 +72,7 @@ namespace LogisticRegression
 			}
 
 			//LR(Mat Data, Mat Labels)
-			CvLR(Mat Data, Mat Labels, CvLR_TrainParams params)
+			CvLR(Mat& Data, Mat& Labels, CvLR_TrainParams& params)
 			{
 				cout<<"params.alpha = "<<params.alpha<<endl;
 				cout<<"params.num_iters = "<<params.num_iters<<endl;
@@ -87,14 +87,14 @@ namespace LogisticRegression
 			{
 			}
 
-			cv::Mat train(Mat DataI, Mat LabelsI, CvLR_TrainParams params);
-			cv::Mat predict(Mat Data, Mat Thetas);
-			cv::Mat calc_sigmoid(Mat Data);
-			double compute_cost(Mat Data, Mat Labels, Mat Init_Theta, CvLR_TrainParams params);
-			cv::Mat compute_gradient(Mat Data, Mat Labels, Mat Init_Theta, CvLR_TrainParams params);
-			std::map<int, int> get_label_map(Mat Labels);
-			vector<int> get_label_list(std::map<int, int> lmap);
-			cv::Mat remap_labels(Mat Labels, std::map<int, int> lmap);
+			cv::Mat train(const Mat& DataI, const Mat& LabelsI, const CvLR_TrainParams& params);
+			cv::Mat predict(const Mat& Data, const Mat& Thetas);
+			cv::Mat calc_sigmoid(const Mat& Data);
+			double compute_cost(const Mat& Data, const Mat& Labels, const Mat& Init_Theta, const CvLR_TrainParams& params);
+			cv::Mat compute_batch_gradient(const Mat& Data, const Mat& Labels, const Mat& Init_Theta, const CvLR_TrainParams& params);
+			std::map<int, int> get_label_map(const Mat& Labels);
+			vector<int> get_label_list(const std::map<int, int> lmap);
+			cv::Mat remap_labels(const Mat& Labels, const std::map<int, int> lmap);
 
 	};
 /* end of namespace */

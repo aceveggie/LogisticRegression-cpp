@@ -46,7 +46,7 @@ LogisticRegression::CvLR_TrainParams::~CvLR_TrainParams()
 
 }
 
-cv::Mat LogisticRegression::CvLR::train(Mat DataI, Mat LabelsI, CvLR_TrainParams params)
+cv::Mat LogisticRegression::CvLR::train(const Mat& DataI, const Mat& LabelsI, const CvLR_TrainParams& params)
 {
 	// cout<<"params.alpha = "<<params.alpha<<endl;
 	// cout<<"params.num_iters = "<<params.num_iters<<endl;
@@ -79,7 +79,7 @@ cv::Mat LogisticRegression::CvLR::train(Mat DataI, Mat LabelsI, CvLR_TrainParams
 		
 		LLabels.convertTo(Labels, CV_64F);
 		
-		Mat NewTheta = LogisticRegression::CvLR::compute_gradient(Data, Labels, Init_Theta, params);
+		Mat NewTheta = LogisticRegression::CvLR::compute_batch_gradient(Data, Labels, Init_Theta, params);
 		
 		Thetas = NewTheta.t();
 	}
@@ -97,7 +97,7 @@ cv::Mat LogisticRegression::CvLR::train(Mat DataI, Mat LabelsI, CvLR_TrainParams
 			DataI.convertTo(Data, CV_64F);
 			NewLocalLabels.convertTo(Labels, CV_64F);
 			cout<<"initial theta: "<<Init_Theta<<endl;
-			Mat NewTheta = LogisticRegression::CvLR::compute_gradient(Data, Labels, Init_Theta, params);
+			Mat NewTheta = LogisticRegression::CvLR::compute_batch_gradient(Data, Labels, Init_Theta, params);
 			cout<<"learnt theta: "<<NewTheta<<endl;
 			hconcat(NewTheta.t(), Thetas.row(ii));
 			ii += 1;
@@ -108,7 +108,7 @@ cv::Mat LogisticRegression::CvLR::train(Mat DataI, Mat LabelsI, CvLR_TrainParams
 	return Thetas;
 }
 
-cv::Mat LogisticRegression::CvLR::predict(Mat Data, cv::Mat Thetas)
+cv::Mat LogisticRegression::CvLR::predict(const Mat& Data, const cv::Mat& Thetas)
 {
 	/* returns a class of the predicted class
 	 class names can be 1,2,3,4, .... etc */
@@ -167,7 +167,7 @@ cv::Mat LogisticRegression::CvLR::predict(Mat Data, cv::Mat Thetas)
 	return CLabels;
 }
 
-cv::Mat LogisticRegression::CvLR::calc_sigmoid(Mat Data)
+cv::Mat LogisticRegression::CvLR::calc_sigmoid(const Mat& Data)
 {
 	cv::Mat Dest;
 	cv::exp(-Data, Dest);
@@ -176,7 +176,7 @@ cv::Mat LogisticRegression::CvLR::calc_sigmoid(Mat Data)
 
 
 //double LogisticRegression::CvLR::compute_cost(Mat Data, Mat Labels, Mat Init_Theta)
-double LogisticRegression::CvLR::compute_cost(Mat Data, Mat Labels, Mat Init_Theta, CvLR_TrainParams params)
+double LogisticRegression::CvLR::compute_cost(const Mat& Data, const Mat& Labels, const Mat& Init_Theta, const CvLR_TrainParams& params)
 {
 	
 	int llambda = 0;
@@ -232,8 +232,10 @@ double LogisticRegression::CvLR::compute_cost(Mat Data, Mat Labels, Mat Init_The
 	return cost;
 }
 
-cv::Mat LogisticRegression::CvLR::compute_gradient(Mat Data, Mat Labels, Mat Init_Theta, CvLR_TrainParams params)
+cv::Mat LogisticRegression::CvLR::compute_batch_gradient(const Mat& Data, const Mat& Labels, const Mat& Init_Theta, const CvLR_TrainParams& params)
 {
+	// implements batch gradient descent
+
 	int llambda = 0;
 	long double ccost;
 	int m, n;
@@ -301,7 +303,7 @@ cv::Mat LogisticRegression::CvLR::compute_gradient(Mat Data, Mat Labels, Mat Ini
 
 }
 
-std::map<int, int> LogisticRegression::CvLR::get_label_map(Mat Labels)
+std::map<int, int> LogisticRegression::CvLR::get_label_map(const Mat& Labels)
 {
 	// this function creates two maps to map user defined labels to program friendsly labels
 	// two ways.
@@ -345,7 +347,7 @@ vector<int> LogisticRegression::CvLR::get_label_list(std::map<int, int> lmap)
 	return v;
 }
 
-cv::Mat LogisticRegression::CvLR::remap_labels(Mat Labels, std::map<int, int> lmap)
+cv::Mat LogisticRegression::CvLR::remap_labels(const Mat& Labels, std::map<int, int> lmap)
 {
 	cv::Mat NewLabels = Mat::zeros(Labels.rows, Labels.cols, Labels.type());
 	for(int i =0;i<Labels.rows;i++)
