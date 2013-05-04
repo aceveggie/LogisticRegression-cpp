@@ -40,50 +40,58 @@ namespace LogisticRegression
 
 	using namespace std;
 	using namespace cv;
+	
+	struct CV_EXPORTS_W_MAP CvLR_TrainParams
+	{
+		CvLR_TrainParams();
+	    
+	    CvLR_TrainParams(double alpha, int num_iters, int normalization, bool debug, bool regularized);
+	    
+	    ~CvLR_TrainParams();
 
-	/* Perform Logistic Regression */
-	class LR 
+	    CV_PROP_RW double alpha;
+	    CV_PROP_RW bool regularized;
+	    CV_PROP_RW int num_iters;
+	    CV_PROP_RW int normalization;
+	    CV_PROP_RW bool debug;
+	    
+	};
+
+	/* Logistic Regression */
+	class CvLR 
 	{
 
-		private:
-
-			float alpha;
-
-			int num_classes;
-			int num_iters;
-
-			string normalization_mode;
-
-			bool debug;
-			bool regularized;
-
+		public:
+			enum { REG_L1=0, REG_L2 = 1};			
 			map<int, int> forward_mapper;
 			map<int, int> reverse_mapper;
 
-
 		public:
-
-			LR(Mat Data, Mat Labels, int num_iters = 100,bool regularized = false,bool debug = false, float alpha = 1,string normalization_mode = "L2")
+			CvLR()
 			{
-				this->alpha = alpha;
-				this->num_iters = num_iters;
-				this->normalization_mode = normalization_mode;
-				this->debug = debug;
-				this->regularized = regularized;
-				
 			}
 
-			~LR()
+			//LR(Mat Data, Mat Labels)
+			CvLR(Mat Data, Mat Labels, CvLR_TrainParams params)
 			{
-	
+				cout<<"params.alpha = "<<params.alpha<<endl;
+				cout<<"params.num_iters = "<<params.num_iters<<endl;
+				cout<<"params.normalization = "<<params.normalization<<endl;
+				cout<<"params.debug = "<<params.debug<<endl;
+				cout<<"params.regularized = "<<params.regularized<<endl;
+				//exit(0);
+				train(Data, Labels, params);
 			}
 
-			void init();			
-			cv::Mat train(Mat DataI, Mat LabelsI);
+			~CvLR()
+			{
+			}
+
+			cv::Mat train(Mat DataI, Mat LabelsI, CvLR_TrainParams params);
 			cv::Mat predict(Mat Data, Mat Thetas);
 			cv::Mat calc_sigmoid(Mat Data);
-			double compute_cost(Mat Data, Mat Labels, Mat Init_Theta);
-			cv::Mat compute_gradient(Mat Data, Mat Labels, Mat Init_Theta);
+			double compute_cost(Mat Data, Mat Labels, Mat Init_Theta, CvLR_TrainParams params);
+			cv::Mat compute_gradient(Mat Data, Mat Labels, Mat Init_Theta, CvLR_TrainParams params);
 			std::map<int, int> get_label_map(Mat Labels);
 			vector<int> get_label_list(std::map<int, int> lmap);
 			cv::Mat remap_labels(Mat Labels, std::map<int, int> lmap);
