@@ -118,6 +118,7 @@ LR: /usr/local/lib/libopencv_ml.so
 LR: /usr/local/lib/libopencv_nonfree.so
 LR: /usr/local/lib/libopencv_objdetect.so
 LR: /usr/local/lib/libopencv_photo.so
+LR: /usr/local/lib/libopencv_softcascade.so
 LR: /usr/local/lib/libopencv_stitching.so
 LR: /usr/local/lib/libopencv_superres.so
 LR: /usr/local/lib/libopencv_ts.so

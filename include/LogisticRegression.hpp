@@ -24,7 +24,7 @@ www.github.com/aceveggie
 
 
 #include <iostream>
-#include <assert.h>
+#include <map>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -41,61 +41,65 @@ namespace LogisticRegression
 	using namespace std;
 	using namespace cv;
 	
-	struct CV_EXPORTS_W_MAP CvLR_TrainParams
+	struct CvLR_TrainParams
 	{
 		CvLR_TrainParams();
-	    
 	    CvLR_TrainParams(double alpha, int num_iters, int normalization, bool debug, bool regularized);
-	    
 	    ~CvLR_TrainParams();
 
-	    CV_PROP_RW double alpha;
-	    CV_PROP_RW bool regularized;
-	    CV_PROP_RW int num_iters;
-	    CV_PROP_RW int normalization;
-	    CV_PROP_RW bool debug;
+	    double alpha;
+	    bool regularized;
+	    int num_iters;
+	    int normalization;
+	    bool debug;
 	    
 	};
 
 	/* Logistic Regression */
-	class CvLR 
+	// class CvLR : public CvStatModel
+	class CvLR
 	{
 
 		public:
-			enum { REG_L1=0, REG_L2 = 1};			
-			map<int, int> forward_mapper;
-			map<int, int> reverse_mapper;
+			enum { REG_L1=0, REG_L2 = 1};
 
-		public:
 			CvLR()
 			{
 			}
+			
 
 			//LR(Mat Data, Mat Labels)
-			CvLR(Mat& Data, Mat& Labels, CvLR_TrainParams& params)
+			CvLR(const Mat& Data, const Mat& Labels, const CvLR_TrainParams& params)
 			{
-				cout<<"params.alpha = "<<params.alpha<<endl;
-				cout<<"params.num_iters = "<<params.num_iters<<endl;
-				cout<<"params.normalization = "<<params.normalization<<endl;
-				cout<<"params.debug = "<<params.debug<<endl;
-				cout<<"params.regularized = "<<params.regularized<<endl;
-				//exit(0);
 				train(Data, Labels, params);
 			}
 
 			~CvLR()
 			{
 			}
+			// for SVM bool train(const Mat& trainData, const Mat& responses, const Mat& varIdx=Mat(), const Mat& sampleIdx=Mat(), CvSVMParams params=CvSVMParams() )¶
 
-			cv::Mat train(const Mat& DataI, const Mat& LabelsI, const CvLR_TrainParams& params);
-			cv::Mat predict(const Mat& Data, const Mat& Thetas);
+			bool train(const Mat& DataI, const Mat& LabelsI, const CvLR_TrainParams& params);
+			float predict(const Mat& Data, cv::Mat& PredLabs);
+			float predict(const Mat& Data);
+			
+		protected:
+			std::map<int, int> forward_mapper;
+			std::map<int, int> reverse_mapper;
+			cv::Mat learntThetas;
+
+			CvLR_TrainParams params;
+
+			bool set_default_params();
 			cv::Mat calc_sigmoid(const Mat& Data);
 			double compute_cost(const Mat& Data, const Mat& Labels, const Mat& Init_Theta, const CvLR_TrainParams& params);
 			cv::Mat compute_batch_gradient(const Mat& Data, const Mat& Labels, const Mat& Init_Theta, const CvLR_TrainParams& params);
 			std::map<int, int> get_label_map(const Mat& Labels);
-			vector<int> get_label_list(const std::map<int, int> lmap);
+			bool set_label_map(const Mat& Labels);
 			cv::Mat remap_labels(const Mat& Labels, const std::map<int, int> lmap);
-
+			void clear();
+			void read();
+			void write();
 	};
 /* end of namespace */
 }
