@@ -44,7 +44,7 @@ namespace LogisticRegression
 	struct CvLR_TrainParams
 	{
 		CvLR_TrainParams();
-	    CvLR_TrainParams(double alpha, int num_iters, int normalization, bool debug, bool regularized);
+	    CvLR_TrainParams(double alpha, int num_iters, int normalization, bool debug, bool regularized, int train_method);
 	    ~CvLR_TrainParams();
 
 	    double alpha;
@@ -52,6 +52,7 @@ namespace LogisticRegression
 	    int num_iters;
 	    int normalization;
 	    bool debug;
+	    int train_method;
 	    
 	};
 
@@ -62,16 +63,19 @@ namespace LogisticRegression
 
 		public:
 			enum { REG_L1=0, REG_L2 = 1};
+			enum { BATCH, MINI_BATCH};
 
 			CvLR()
 			{
+				set_default_params();
 			}
 			
 
 			//LR(Mat Data, Mat Labels)
 			CvLR(const Mat& Data, const Mat& Labels, const CvLR_TrainParams& params)
 			{
-				train(Data, Labels, params);
+				this->params = params;
+				train(Data, Labels);
 			}
 
 			~CvLR()
@@ -79,9 +83,10 @@ namespace LogisticRegression
 			}
 			// for SVM bool train(const Mat& trainData, const Mat& responses, const Mat& varIdx=Mat(), const Mat& sampleIdx=Mat(), CvSVMParams params=CvSVMParams() )¶
 
-			bool train(const Mat& DataI, const Mat& LabelsI, const CvLR_TrainParams& params);
+			bool train(const Mat& DataI, const Mat& LabelsI);
 			float predict(const Mat& Data, cv::Mat& PredLabs);
 			float predict(const Mat& Data);
+			void print_learnt_mats();
 			
 		protected:
 			std::map<int, int> forward_mapper;
@@ -89,14 +94,16 @@ namespace LogisticRegression
 			cv::Mat learntThetas;
 
 			CvLR_TrainParams params;
-
+			
 			bool set_default_params();
 			cv::Mat calc_sigmoid(const Mat& Data);
-			double compute_cost(const Mat& Data, const Mat& Labels, const Mat& Init_Theta, const CvLR_TrainParams& params);
-			cv::Mat compute_batch_gradient(const Mat& Data, const Mat& Labels, const Mat& Init_Theta, const CvLR_TrainParams& params);
+			double compute_cost(const Mat& Data, const Mat& Labels, const Mat& Init_Theta);
+			cv::Mat compute_batch_gradient(const Mat& Data, const Mat& Labels, const Mat& Init_Theta);
+			cv::Mat compute_mini_batch_gradient(const Mat& Data, const Mat& Labels, const Mat& Init_Theta);
 			std::map<int, int> get_label_map(const Mat& Labels);
 			bool set_label_map(const Mat& Labels);
 			cv::Mat remap_labels(const Mat& Labels, const std::map<int, int> lmap);
+
 			void clear();
 			void read();
 			void write();
