@@ -48,12 +48,12 @@ int main(int argc, char** argv)
 	CvLR_TrainParams params = CvLR_TrainParams();
 	
 
-	params.alpha = 0.0175;
-	params.num_iters = 100000;
-	params.normalization = CvLR::REG_L2;
+	params.alpha = 1.00;
+	params.num_iters = 10000;
+	params.normalization = CvLR::REG_L1;
 	params.debug = true;
 	params.regularized = true;
-	params.train_method = CvLR::MINI_BATCH;
+	params.train_method = CvLR::BATCH;
 	
 	CvLR lr_(Data, Labels, params);
 	
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
 	cout<<"accuracy: "<<((double)cv::sum(Result)[0]/Result.rows)*100<<"%\n";
 
-	//Mat NData = (Mat_<double>(1, 4)<< 5.1,3.5,1.4,0.2);
+
 	Mat NData = (Mat_<double>(1,4)<<5.9,3.0,5.1,1.8);
 
 	cout<<"predicted label of "<<NData<<"is :"<<lr_.predict(NData)<<endl;
@@ -80,57 +80,52 @@ int main(int argc, char** argv)
 
 	lr_.print_learnt_mats();
 
-	// CvMLData cvml;
- //    //cvml.read_csv("examples.csv");
- //    cvml.read_csv("1.txt");
- //    cvml.read_csv("letter-recognition.data");
- //    cvml.set_response_idx(0);
- //    const CvMat* vs = cvml.get_values();
- //    cout << "Rows: " << vs->rows << " Cols: " << vs->cols << endl;
- //    // for(int i = 0; i < vs->rows; i++ )
- //    // {
- //    //     cout << vs->data.fl[i*vs->cols] << "\n"; 
- //    // }
- //    Mat DataMat = vs;
- //    Mat LLabels, DData;
- //    cout<<DataMat.rows<<", "<<DataMat.cols<<endl;
-
- //    Data = DataMat(Range::all(), Range(1,DataMat.cols));
-	// Data.convertTo(Data, CV_64F);	
-
- //    Labels = DataMat(Range::all(), Range(0,1));
- //    Labels.convertTo(LLabels, CV_32S);
- //    Labels = LLabels.clone();
-
- //    // cout<<Data.row(0)<<endl;
- //    // cout<<Labels<<endl;
+	CvMLData cvml;
     
 
- //    cout<<Labels.type()<<endl;
- //    cout<<CV_32S<<endl;
+    cvml.read_csv("digitdata2.txt");
     
- //    cout<<Data.rows<<", "<<Data.cols<<endl;
- //    cout<<Labels.rows<<", "<<Labels.cols<<endl;
- //    cout<<Data.type()<<endl;
+    cvml.set_response_idx(64);
+
+    const CvMat* vs = cvml.get_values();
+    cout << "Rows: " << vs->rows << " Cols: " << vs->cols << endl;
     
-	
-	// Mat Responses1;
-	
-	// CvLR lr1_(Data, Labels, params);
+    Mat DataMat = vs;
+    Mat LLabels, DData;
+    cout<<DataMat.rows<<", "<<DataMat.cols<<endl;
 
-	// lr1_.predict(Data, Responses1);
+    Data = DataMat(Range::all(), Range(0,DataMat.cols-1));
+	Data.convertTo(Data, CV_64F);	
+
+    Labels = DataMat(Range::all(), Range(64,65));
+    Labels.convertTo(LLabels, CV_32S);
+    Labels = LLabels.clone();
+
+	Mat Responses1;
+	
+	CvLR_TrainParams params1;
+
+	params1.alpha = 0.37;
+	params1.num_iters = 10000;
+	params1.normalization = CvLR::REG_L2;
+	params1.debug = true;
+	params1.regularized = true;
+	params1.train_method = CvLR::MINI_BATCH;
+	
+	CvLR lr1_(Data, Labels, params1);
+
+	lr1_.predict(Data, Responses1);
     
-	// Result = (Labels == Responses1)/255;
+	Result = (Labels == Responses1)/255;
 	
-	// cout<<"[Original Label]\t[Predicted Label]\t[Result]"<<endl;
+	cout<<"[Original Label]\t[Predicted Label]\t[Result]"<<endl;
 
-	// // for(int i =0;i<Labels.rows;i++)
-	// // {
-	// // 	cout<<Labels.row(i)<<"\t"<<Responses.row(i)<<"\t"<<Result.row(i)<<endl;
-	// // }
+	// for(int i =0;i<Labels.rows;i++)
+	// {
+	// 	cout<<Labels.row(i)<<"\t"<<Responses1.row(i)<<"\t"<<Result.row(i)<<endl;
+	// }
 
-	// cout<<"accuracy: "<<((double)cv::sum(Result)[0]/Result.rows)*100<<"%\n";
+	cout<<"accuracy: "<<((double)cv::sum(Result)[0]/Result.rows)*100<<"%\n";
 
-	
 	return 0;
 }

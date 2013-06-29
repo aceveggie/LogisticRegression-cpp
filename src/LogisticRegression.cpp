@@ -54,7 +54,6 @@ bool LogisticRegression::CvLR::train(const Mat& DataI, const Mat& LabelsI)
 
 	int num_classes = this->forward_mapper.size();
 
-	
 	Mat DataT = Mat::zeros(DataI.rows, DataI.cols+1, CV_64F);
 	
 	//vconcat(Mat(DataI.rows, 1, DataI.type(), Scalar::all(1.0)), DataI.col(0));
@@ -71,7 +70,9 @@ bool LogisticRegression::CvLR::train(const Mat& DataI, const Mat& LabelsI)
 	
 
 	CV_Assert(LabelsI.rows == DataT.rows);
-	
+
+	cout<<"num_classes = "<<num_classes<<endl;
+	cout<<LabelsI<<endl;
 	CV_Assert(num_classes>=2);
 
 	Mat Data;
@@ -400,11 +401,12 @@ cv::Mat LogisticRegression::CvLR::compute_mini_batch_gradient(const Mat& Data, c
 	}
 	
 	int j = 0;
-	int bsize = 20;
+	int bsize = 10;
 
 	for(int i = 0;i<this->params.num_iters;i++)
 	{
-	
+		// cout<<j + bsize<<endl;
+		// cout<<Data.rows<<endl;
 		if(j+bsize<=Data.rows)
 		{
 			DData = Data(Range(j,j+bsize), Range::all());
@@ -430,7 +432,7 @@ cv::Mat LogisticRegression::CvLR::compute_mini_batch_gradient(const Mat& Data, c
 
 
 		ccost = LogisticRegression::CvLR::compute_cost(DData, LLabels, PTheta);
-		//cout<<"calculated cost: "<<ccost<<endl;
+		// cout<<"calculated cost: "<<ccost<<endl;
 
 		if(this->params.debug == true && i%(this->params.num_iters/2)==0)
 		{	
@@ -458,7 +460,7 @@ cv::Mat LogisticRegression::CvLR::compute_mini_batch_gradient(const Mat& Data, c
 
 		B = DData(Range::all(), Range(1,n));
 		
-		// cout<<"for each training data entry"<<endl;
+		//cout<<"for each training data entry"<<endl;
 		
 		for(int i = 1;i<Gradient.rows;i++)
 		{
@@ -477,8 +479,10 @@ cv::Mat LogisticRegression::CvLR::compute_mini_batch_gradient(const Mat& Data, c
 		PTheta = PTheta - ( static_cast<double>(this->params.alpha)/m)*Gradient;
 		// cout<<"updated PTheta"<<endl;
 		j+=10;
+		if(j+bsize>Data.rows)
+			break;
 	}
-	
+	//cout<<"returning PTheta"<<endl;
 	return PTheta;
 
 }

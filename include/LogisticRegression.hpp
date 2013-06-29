@@ -103,6 +103,7 @@ namespace LogisticRegression
 			std::map<int, int> get_label_map(const Mat& Labels);
 			bool set_label_map(const Mat& Labels);
 			cv::Mat remap_labels(const Mat& Labels, const std::map<int, int> lmap);
+			
 
 			void clear();
 			void read();
